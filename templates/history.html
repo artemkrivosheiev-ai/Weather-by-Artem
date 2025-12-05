@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<title>{{ texts.title[lang] }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="history-background"></div>
+
+<a href="{{ url_for('index') }}" class="btn btn-top-left">⬅️ {% if lang=='ru' %}На главный экран{% else %}Back to main{% endif %}</a>
+
+<div class="container history-container">
+    <h1>🕘 {{ texts.title[lang] }}</h1>
+
+    {% if history %}
+        <ul class="history-list">
+            {% for city in history %}
+                <li>{{ city }}</li>
+            {% endfor %}
+        </ul>
+        <form method="POST">
+            <button class="btn">{{ texts.clear_btn[lang] }}</button>
+        </form>
+    {% else %}
+        <p>{{ texts.empty[lang] }}</p>
+    {% endif %}
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

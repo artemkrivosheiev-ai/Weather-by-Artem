@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<title>{% if lang=='ru' %}Прогноз погоды{% else %}Weather Forecast{% endif %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="background-map"></div>
+<canvas id="effectsCanvas"></canvas>
+
+<div class="top-buttons">
+    <a id="changeLang" href="{{ url_for('change_lang') }}" class="btn-small">🌐 {% if lang=='ru' %}RU{% else %}EN{% endif %}</a>
+    <a href="{{ url_for('history') }}" class="btn-small">🕘 {% if lang=='ru' %}История{% else %}History{% endif %}</a>
+    <a href="{{ url_for('compare') }}" class="btn-small">⚖️ {% if lang=='ru' %}Сравнить города{% else %}Compare Cities{% endif %}</a>
+</div>
+
+<div class="container">
+    <h1 id="title">{% if lang=='ru' %}🌩️ Прогноз погоды{% else %}🌩️ Weather Forecast{% endif %}</h1>
+
+    <form method="POST" class="d-flex justify-content-center mb-4" style="margin-top:20px;">
+        <input id="cityInput" type="text" name="city" placeholder="{% if lang=='ru' %}Введите город...{% else %}Enter city...{% endif %}" class="form-control w-50" required>
+        <button id="showBtn" type="submit" class="btn">{% if lang=='ru' %}Показать{% else %}Show{% endif %}</button>
+    </form>
+
+    {% if weather %}
+        {% if weather.error %}
+            <div style="color:red; font-weight:bold;">{{ weather.error }}</div>
+        {% else %}
+            <div class="card current-weather fade-in">
+                <h3>{{ weather.city }}, {{ weather.country }}</h3>
+                <img src="https://openweathermap.org/img/wn/{{ weather.icon }}@2x.png" alt="icon">
+                <h2>{{ weather.temp }}°C</h2>
+                <p>{{ weather.desc }}</p>
+                <p>{% if lang=='ru' %}Ощущается как{% else %}Feels like{% endif %}: {{ weather.feels_like }}°C</p>
+                <p>💧 {% if lang=='ru' %}Влажность{% else %}Humidity{% endif %}: {{ weather.humidity }}%</p>
+                <p>🌬️ {% if lang=='ru' %}Ветер{% else %}Wind{% endif %}: {{ weather.wind }} м/с</p>
+
+                <!-- Кнопка: Карта мира (появляется только если есть weather и координаты/город) -->
+                <div style="margin-top:15px;">
+                    <a href="{{ url_for('map_page') }}?city={{ weather.city | urlencode }}&country={{ weather.country | urlencode }}{% if weather.lat %}&lat={{ weather.lat }}&lon={{ weather.lon }}{% endif %}"
+                       class="btn">
+                       🌍 {% if lang=='ru' %}Карта мира{% else %}World Map{% endif %}
+                    </a>
+                </div>
+
+            </div>
+
+            {% if forecast %}
+            <h3 id="forecastTitle">{% if lang=='ru' %}📅 Прогноз на 5 дней{% else %}📅 5-Day Forecast{% endif %}</h3>
+            <div class="forecast-container">
+                {% for f in forecast %}
+                <div class="small-card fade-in">
+                    <p><strong>{{ f.date }}</strong></p>
+                    <img src="https://openweathermap.org/img/wn/{{ f.icon }}.png" alt="icon_small">
+                    <p>{{ f.temp }}°C</p>
+                    <small>{{ f.desc }}</small>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='effects.js') }}"></script>
+<script src="{{ url_for('static', filename='buttons.js') }}"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <

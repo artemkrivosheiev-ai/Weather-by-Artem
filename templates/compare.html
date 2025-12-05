@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<title>{% if lang=='ru' %}Сравнение городов{% else %}Compare Cities{% endif %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="compare-background"></div>
+
+<a href="{{ url_for('index') }}" class="btn btn-top-left">⬅️ {% if lang=='ru' %}На главный экран{% else %}Back to main{% endif %}</a>
+
+<div class="container">
+    <h1>{% if lang=='ru' %}Сравнение городов{% else %}Compare Cities{% endif %}</h1>
+
+    <form method="POST" class="d-flex justify-content-center mb-4" style="margin-top:20px;">
+        <input type="text" name="city1" placeholder="{% if lang=='ru' %}Город 1{% else %}City 1{% endif %}" class="form-control w-25 me-2" required>
+        <input type="text" name="city2" placeholder="{% if lang=='ru' %}Город 2{% else %}City 2{% endif %}" class="form-control w-25 me-2" required>
+        <button type="submit" class="btn">{% if lang=='ru' %}Сравнить{% else %}Compare{% endif %}</button>
+    </form>
+
+    {% if error %}
+        <p style="color:red; font-weight:bold;">{{ error }}</p>
+    {% endif %}
+
+    {% if city1 and city2 %}
+    <div class="compare-container">
+        <div class="card current-weather fade-in">
+            <h3>{{ city1.city }}, {{ city1.country }}</h3>
+            <img src="https://openweathermap.org/img/wn/{{ city1.icon }}@2x.png">
+            <p>{{ city1.temp }}°C</p>
+            <p>{% if lang=='ru' %}Ветер{% else %}Wind{% endif %}: {{ city1.wind }} m/s</p>
+            <p>{% if lang=='ru' %}Влажность{% else %}Humidity{% endif %}: {{ city1.humidity }}%</p>
+            {% if city1.lat and city1.lon %}
+            <a href="{{ url_for('map_page') }}?city={{ city1.city | urlencode }}&country={{ city1.country | urlencode }}&lat={{ city1.lat }}&lon={{ city1.lon }}" class="btn" style="margin-top:10px;">
+                🌍 {% if lang=='ru' %}Карта{% else %}Map{% endif %}
+            </a>
+            {% endif %}
+        </div>
+        <div class="card current-weather fade-in">
+            <h3>{{ city2.city }}, {{ city2.country }}</h3>
+            <img src="https://openweathermap.org/img/wn/{{ city2.icon }}@2x.png">
+            <p>{{ city2.temp }}°C</p>
+            <p>{% if lang=='ru' %}Ветер{% else %}Wind{% endif %}: {{ city2.wind }} m/s</p>
+            <p>{% if lang=='ru' %}Влажность{% else %}Humidity{% endif %}: {{ city2.humidity }}%</p>
+            {% if city2.lat and city2.lon %}
+            <a href="{{ url_for('map_page') }}?city={{ city2.city | urlencode }}&country={{ city2.country | urlencode }}&lat={{ city2.lat }}&lon={{ city2.lon }}" class="btn" style="margin-top:10px;">
+                🌍 {% if lang=='ru' %}Карта{% else %}Map{% endif %}
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <h3>{% if lang=='ru' %}Прогноз на 5 дней{% else %}5-Day Forecast{% endif %}</h3>
+    <div class="forecast-compare">
+        <div>
+            {% for f in forecast1 %}
+            <div class="small-card">
+                <p><strong>{{ f.date }}</strong></p>
+                <img src="https://openweathermap.org/img/wn/{{ f.icon }}.png">
+                <p>{{ f.temp }}°C</p>
+                <small>{{ f.desc }}</small>
+            </div>
+            {% endfor %}
+        </div>
+        <div>
+            {% for f in forecast2 %}
+            <div class="small-card">
+                <p><strong>{{ f.date }}</strong></p>
+                <img src="https://openweathermap.org/img/wn/{{ f.icon }}.png">
+                <p>{{ f.temp }}°C</p>
+                <small>{{ f.desc }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+</body>
+</html>
+

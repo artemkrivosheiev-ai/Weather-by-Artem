@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+<meta charset="UTF-8">
+<title>Map - {{ city }}</title>
+
+<!-- Стили -->
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+
+<!-- Скрипт Leaflet -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+    /* Полная карта */
+    #map { height: 100vh; width: 100%; }
+
+    /* Кнопка "Назад" неоновая */
+    .btn-back {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        padding: 10px 15px;
+        background: #39ff14;
+        color: black;
+        font-weight: bold;
+        border-radius: 10px;
+        text-decoration: none;
+        z-index: 1000;
+        text-shadow: 0 0 5px #39ff14, 0 0 10px #39ff14, 0 0 20px #39ff14;
+        transition: 0.3s;
+    }
+    .btn-back:hover {
+        background: #00ff00;
+        text-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14, 0 0 40px #39ff14;
+    }
+
+    /* Неоновый маркер */
+    .neon-marker {
+        filter: drop-shadow(0 0 7px #39ff14) drop-shadow(0 0 15px #39ff14);
+    }
+</style>
+</head>
+
+<body>
+
+<!-- Кнопка назад -->
+<a href="{{ url_for('index') }}" class="btn-back">
+    ⬅️ {% if lang=='ru' %}Назад{% else %}Back{% endif %}
+</a>
+
+<!-- Контейнер карты -->
+<div id="map"></div>
+
+<script>
+let city = "{{ city }}";
+let country = "{{ country }}";
+
+// Получаем координаты через Nominatim
+fetch(`https://nominatim.openstreetmap.org/search?city=${city}&country=${country}&format=json&limit=1`)
+.then(res => res.json())
+.then(data => {
+    if(data.length === 0) return alert("City not found!");
+
+    let lat = data[0].lat;
+    let lon = data[0].lon;
+
+    // Создаём карту
+    let map = L.map('map', {
+        zoomControl: false // отключаем стандартные кнопки
+    }).setView([lat, lon], 6);
+
+    // Добавляем тайлы OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18
+    }).addTo(map);
+
+    // Добавляем стандартные кнопки зума (+/-) в нижнем правом углу
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    // Иконка неоновая
+    const neonIcon = L.icon({
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/535/535239.png',
+        iconSize: [40, 40],
+        className: 'neon-marker'
+    });
+
+    // Маркер города
+    L.marker([lat, lon], { icon: neonIcon })
+     .addTo(map)
+     .bindPopup(`<b style="color:#39ff14;">${city}</b>`)
+     .openPopup();
+});
+</script>
+
+</body>
+</html>
+
